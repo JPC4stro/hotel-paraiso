@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Hotel Paraíso Falcón - Reservaciones"/>
+    <title>Hotel Paraíso Falcón - Reservaciones</title>
+</head>
+<body>
+    <header>
+        <h1>Hotel Paraíso Falcón</h1>
+        <nav>
+            <ul>
+                <li><a href="#welcome">Inicio</a></li>
+                <li><a href="#services">Servicios</a></li>
+                <li><a href="#reservation-form">Reservar</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="welcome">
+            <h2>Bienvenido a Hotel Paraíso Falcón</h2>
+            <div class="logo-container">
+                <img src="paraiso.png" alt="Logo de Hotel Paraíso" class="hotel-logo">
+                <p>Disfruta de una estancia inolvidable en nuestro lujoso hotel en el corazón de Falcón. Ofrecemos las mejores comodidades y servicios para que tengas una experiencia única.</p>
+            </div>
+        </section>
+        
+        <section id="services">    
+            <h2>Nuestros Servicios</h2>
+            <ul>
+                <li>Habitaciones equipadas con aire acondicionado y Wi-Fi gratuito</li>
+                <li>Servicio de habitación 24/7</li>
+                <li>Gimnasio totalmente equipado</li>
+                <li>Restaurante gourmet con cocina local e internacional</li>
+                <li>Piscina al aire libre con vista al mar</li>
+                <li>Servicio de transporte al aeropuerto</li>
+            </ul>
+            <p>Descubre por qué somos el mejor hotel de la ciudad, con un servicio excepcional y una atención al cliente incomparable.</p>
+        </section>
+        <section id="reservation-form">
+            <h2>Formulario de Reservación</h2>
+            <form id="form" action="/reservar" method="post">
+                <label for="name">Nombre Completo:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="phone">Teléfono:</label>
+                <input type="tel" id="phone" name="phone" required>
+                <label for="arrival-date">Fecha de Llegada:</label>
+                <input type="date" id="arrival-date" name="arrival_date" required>
+                <label for="departure-date">Fecha de Salida:</label>
+                <input type="date" id="departure-date" name="departure_date" required>
+                <label for="room-type">Tipo de Habitación:</label>
+                <select id="room-type" name="room_type" required>
+                    <option value="">Seleccione...</option>
+                    <option value="individual">Individual - $30/noche</option>
+                    <option value="doble">Doble - $50/noche</option>
+                    <option value="suite">Suite - $80/noche</option>
+                </select>
+                <label for="guests">Número de Huéspedes:</label>
+                <input type="number" id="guests" name="guests" min="1" max="4" required>
+                
+                <div id="room-details" style="margin-top: 20px;">
+                    <h3>Detalles de la Reservación</h3>
+                    <p id="details"></p>
+                    <p id="price"></p>
+                </div>
+
+                <button type="submit">Reservar</button>
+            </form>
+            <div id="confirmation-message"></div>
+        </section>
+        <section id="contact">
+            <h2>Contacto</h2>
+            <p>Para más información, no dudes en contactarnos a través de nuestro correo electrónico:</p>
+            <p><a href="mailto:info@hotelparaisofalcon.com">info@hotelparaisofalcon.com</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Hotel Paraíso Falcón. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('form');
+        const roomTypeSelect = document.getElementById('room-type');
+        const guestsInput = document.getElementById('guests');
+        const arrivalDateInput = document.getElementById('arrival-date');
+        const departureDateInput = document.getElementById('departure-date');
+        const detailsParagraph = document.getElementById('details');
+        const priceParagraph = document.getElementById('price');
+        const confirmationMessage = document.getElementById('confirmation-message');
+
+        const prices = {
+            'individual': 30,
+            'doble': 50,
+            'suite': 80
+        };
+
+        form.addEventListener('input', function() {
+            const roomType = roomTypeSelect.value;
+            const guests = parseInt(guestsInput.value, 10);
+            const arrivalDate = new Date(arrivalDateInput.value);
+            const departureDate = new Date(departureDateInput.value);
+            const timeDifference = departureDate - arrivalDate;
+            const daysOfStay = timeDifference / (1000 * 3600 * 24);
+            const roomPrice = prices[roomType] || 0;
+
+            if (daysOfStay <= 0) {
+                detailsParagraph.textContent = `Por favor, verifica las fechas de llegada y salida.`;
+                priceParagraph.textContent = '';
+                return;
+            }
+
+            const maxGuests = roomType === 'individual' ? 1 : roomType === 'doble' ? 2 : 4;
+            if (guests > maxGuests) {
+                detailsParagraph.textContent = `El número máximo de huéspedes para este tipo de habitación es ${maxGuests}.`;
+                priceParagraph.textContent = '';
+                return;
+            }
+
+            const totalPrice = daysOfStay * roomPrice;
+            detailsParagraph.textContent = `Tipo de Habitación: ${roomType}, Número de Huéspedes: ${guests}, Días de Hospedaje: ${daysOfStay}`;
+            priceParagraph.textContent = `Precio Total: $${totalPrice.toFixed(2)}`;
+        });
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            fetch('/reservar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    confirmationMessage.innerHTML = `<p>${data.message}</p>`;
+                    form.reset();
+                    detailsParagraph.textContent = '';
+                    priceParagraph.textContent = '';
+                } else {
+                    confirmationMessage.innerHTML = `<p style="color:red;">${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                confirmationMessage.innerHTML = `<p style="color:red;">Hubo un error al procesar su reservación.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
