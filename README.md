@@ -1,6 +1,6 @@
 Hotel Paraíso
 Descripción:
-esta es una página web para el "Hotel Paraíso" que permite a los usuarios realizar reservaciones de manera sencilla, mediante formulario de reservación donde ingresan sus datos personales, seleccionan fechas y el tipo de habitación que desean. Ubicado en Falcón, este hotel ofrece un entorno acogedor y lujoso, ideal para aquellos que buscan una estancia inolvidable.
+Esta es una página web para el "Hotel Paraíso" que permite a los usuarios realizar reservaciones de manera sencilla, mediante formulario de reservación donde ingresan sus datos personales, seleccionan fechas y el tipo de habitación que desean. Ubicado en Falcón, este hotel ofrece un entorno acogedor y lujoso, ideal para aquellos que buscan una estancia inolvidable.
 
 Requisitos:
 
